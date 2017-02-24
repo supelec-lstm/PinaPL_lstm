@@ -1,0 +1,5 @@
+#!/bin/sh
+echo " === Linting your code before commit === "
+echo "If your code is not following Google's cpp guidelines, it will not commit"
+./dev_tools/cpplint/cpplint.py --extensions "hpp,cpp,c,h" *.cpp *.hpp *.c *.h
+
