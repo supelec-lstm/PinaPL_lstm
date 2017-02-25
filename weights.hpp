@@ -21,8 +21,8 @@ class Weights {
 
     Eigen::MatrixXd delta_weight_forget_gate;
     Eigen::MatrixXd delta_weight_input_gate;
-    Eigen::MatrixXd delta_weight_input_bloc;
-    Eigen::MatrixXd delta_weight_output_bloc;
+    Eigen::MatrixXd delta_weight_input_block;
+    Eigen::MatrixXd delta_weight_output_block;
 
 
  public:
@@ -32,7 +32,7 @@ class Weights {
 
     Eigen::MatrixXd weight_forget_gate;
     Eigen::MatrixXd weight_input_gate;
-    Eigen::MatrixXd weight_input_bloc;
-    Eigen::MatrixXd weight_output_bloc;
+    Eigen::MatrixXd weight_input_block;
+    Eigen::MatrixXd weight_output_block;
 };
 #endif

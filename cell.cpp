@@ -33,22 +33,23 @@ void Cell::compute(
         (this->weights->weight_input_gate * this->full_input)
         .unaryExpr(&sigmoid);
 
-    this->input_bloc_out =
-        (this->weights->weight_input_bloc * this->full_input)
+    this->input_block_out =
+        (this->weights->weight_input_block * this->full_input)
         .unaryExpr(&tanh);
 
-    this->output_bloc_out =
-        (this->weights->weight_output_bloc * this->full_input)
+    this->output_block_out =
+        (this->weights->weight_output_block * this->full_input)
         .unaryExpr(&sigmoid);
 
     this->cell_state =
         (cell_state.cwiseProduct(this->forget_gate_out)
-        + this->input_gate_out.cwiseProduct(this->input_bloc_out));
+        + this->input_gate_out.cwiseProduct(this->input_block_out));
 
-    this->cell_state_out = this->cell_state.unaryExpr(&tanh);
+        this->cell_state.unaryExpr(&tanh);
 
-    this->cell_out = this->cell_state_out + this->output_bloc_out;
+    this->cell_out =
+        this->cell_state.unaryExpr(&tanh).cwiseProduct(this->output_block_out);
 }
 
-void Cell::compute_gradient() {
-}
+// Eigen::MatrixXd Cell::compute_gradient(Eigen::MatrixXd deltas) {
+// }
