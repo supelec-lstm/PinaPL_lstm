@@ -16,5 +16,8 @@
 #include <map>
 
 double sigmoid(double x);
+double sigmoid_derivative(double x);
+double tanh_derivative(double x);
+
 
 #endif
