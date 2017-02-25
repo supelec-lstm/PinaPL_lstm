@@ -22,7 +22,7 @@ class Cell {
     Eigen::MatrixXd forget_gate_out;
     Eigen::MatrixXd input_gate_out;
     Eigen::MatrixXd input_block_out;
-    Eigen::MatrixXd output_block_out;
+    Eigen::MatrixXd output_gate_out;
     Eigen::MatrixXd cell_state;
     Eigen::MatrixXd cell_out;
 
