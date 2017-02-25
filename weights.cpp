@@ -4,16 +4,8 @@
 // PinaPL
 //
 
-#include <stdlib.h>
 #include <Eigen/Dense>
-
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <map>
 #include <random>
-
-
 #include "weights.hpp"
 
 Weights::Weights(int input_size, int output_size) {

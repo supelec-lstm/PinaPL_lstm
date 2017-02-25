@@ -3,13 +3,8 @@
 // cell.cpp
 // PinaPL
 //
-#include <stdlib.h>
 #include <math.h>
 #include <Eigen/Dense>
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <map>
 #include "weights.hpp"
 #include "cell.hpp"
 #include "functions.hpp"
@@ -51,5 +46,23 @@ void Cell::compute(
         this->cell_state.unaryExpr(&tanh).cwiseProduct(this->output_gate_out);
 }
 
-// Eigen::MatrixXd Cell::compute_gradient(Eigen::MatrixXd deltas) {
-// }
+Eigen::MatrixXd Cell::compute_gradient(Eigen::MatrixXd deltas) {
+    Eigen::MatrixXd delta_cell_out;
+
+    Eigen::MatrixXd delta_output_gate;
+
+    Eigen::MatrixXd delta_cell_state;
+
+    Eigen::MatrixXd delta_forget_gate;
+
+    Eigen::MatrixXd delta_input_gate;
+
+    Eigen::MatrixXd delta_input_block;
+
+    Eigen::MatrixXd delta_input =
+    this->weights->weight_in_input_block * delta_input_block +
+    this->weights->weight_in_input_gate * delta_input_gate +
+    this->weights->weight_in_forget_gate * delta_forget_gate +
+    this->weights->weight_in_output_gate * delta_output_gate;
+    return delta_input;
+}
