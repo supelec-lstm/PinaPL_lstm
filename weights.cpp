@@ -56,7 +56,7 @@ Weights::Weights(int input_size, int output_size) {
         this->input_size + this->output_size);
 }
 
-void Weights::compute_gradient(double lambda) {
+void Weights::apply_gradient(double lambda) {
     this->weight_forget_gate =
         this->weight_forget_gate - lambda * this->delta_weight_forget_gate;
     this->weight_input_gate =

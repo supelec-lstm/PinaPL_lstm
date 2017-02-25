@@ -23,8 +23,8 @@ class Cell {
     Eigen::MatrixXd input_gate_out;
     Eigen::MatrixXd input_bloc_out;
     Eigen::MatrixXd output_bloc_out;
-    Eigen::MatrixXd memory_bloc_out;
-    Eigen::MatrixXd memory;
+    Eigen::MatrixXd cell_state_out;
+    Eigen::MatrixXd cell_state;
     Eigen::MatrixXd cell_out;
 
 
@@ -34,5 +34,6 @@ class Cell {
         Eigen::MatrixXd previous_output,
         Eigen::MatrixXd previous_memory,
         Eigen::MatrixXd input);
+    void compute_gradient();
 };
 #endif

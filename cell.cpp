@@ -20,7 +20,7 @@ Cell::Cell(Weights* weights) {
 
 void Cell::compute(
     Eigen::MatrixXd previous_output,
-    Eigen::MatrixXd previous_memory,
+    Eigen::MatrixXd previous_cell_state,
     Eigen::MatrixXd input) {
     this->full_input = Eigen::MatrixXd(
         input.rows()+previous_output.rows(),
@@ -41,11 +41,14 @@ void Cell::compute(
         (this->weights->weight_output_bloc * this->full_input)
         .unaryExpr(&sigmoid);
 
-    this->memory =
-        (previous_memory.cwiseProduct(this->forget_gate_out)
+    this->cell_state =
+        (cell_state.cwiseProduct(this->forget_gate_out)
         + this->input_gate_out.cwiseProduct(this->input_bloc_out));
 
-    this->memory_bloc_out = this->memory.unaryExpr(&tanh);
+    this->cell_state_out = this->cell_state.unaryExpr(&tanh);
 
-    this->cell_out = this->memory_bloc_out + this->output_bloc_out;
+    this->cell_out = this->cell_state_out + this->output_bloc_out;
+}
+
+void Cell::compute_gradient() {
 }

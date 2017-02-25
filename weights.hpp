@@ -28,7 +28,7 @@ class Weights {
  public:
     Weights(int input_size, int output_size);
     ~Weights();
-    void compute_gradient(double lambda);
+    void apply_gradient(double lambda);
 
     Eigen::MatrixXd weight_forget_gate;
     Eigen::MatrixXd weight_input_gate;
