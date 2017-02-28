@@ -14,7 +14,7 @@
 
 class Cell {
     Weights* weights;
-    std::vector<Eigen::MatrixXd> full_input;
+    std::vector<Eigen::MatrixXd> inputs;
     // std::vector<Eigen::MatrixXd> forget_gate_out;
     std::vector<Eigen::MatrixXd> input_gate_out;
     std::vector<Eigen::MatrixXd> input_block_out;
@@ -33,6 +33,11 @@ class Cell {
  public:
     explicit Cell(Weights* weights);
     void compute(Eigen::MatrixXd input);
-    Eigen::MatrixXd compute_gradient(Eigen::MatrixXd deltas, int time);
+    Eigen::MatrixXd compute_gate_gradient(Eigen::MatrixXd deltas, int time);
+    void compute_weight_gradient();
+    void update_weights(double lambda);
+    void reset_gradient();
 };
 #endif
+
+// TODO(shaka) : initialize delta_* with 0 as first item
