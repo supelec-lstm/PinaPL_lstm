@@ -36,8 +36,6 @@ class Cell {
     Eigen::MatrixXd compute_gate_gradient(Eigen::MatrixXd deltas, int time);
     void compute_weight_gradient();
     void update_weights(double lambda);
-    void reset_gradient();
+    void reset();
 };
 #endif
-
-// TODO(shaka) : initialize delta_* with 0 as first item

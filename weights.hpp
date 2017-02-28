@@ -16,11 +16,9 @@
 
 
 class Weights {
+ public:
     int input_size;
     int output_size;
-
-
- public:
     Weights(int input_size, int output_size);
     ~Weights();
     void apply_gradient(double lambda);

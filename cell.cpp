@@ -12,6 +12,7 @@
 
 Cell::Cell(Weights* weights) {
     this->weights = weights;
+    this->reset();
 }
 
 void Cell::compute(Eigen::MatrixXd input) {
@@ -47,7 +48,7 @@ void Cell::compute(Eigen::MatrixXd input) {
 }
 
 Eigen::MatrixXd Cell::compute_gate_gradient(Eigen::MatrixXd deltas, int time) {
-    int output_size = output_gate_out.at(time).rows();
+    int output_size = this->weights->output_size;
     // Computes dy(t)
     delta_cell_out.push_back(
         deltas
@@ -148,4 +149,30 @@ void Cell::update_weights(double lambda) {
     this->weights->apply_gradient(lambda);
 }
 
-void Cell::reset_gradient() {}
+void Cell::reset() {
+    int output_size = this->weights->output_size;
+
+    this->inputs.clear();
+    this->input_gate_out.clear();
+    this->input_block_out.clear();
+    this->output_gate_out.clear();
+    this->cell_state.clear();
+    this->cell_out.clear();
+
+    this->delta_cell_out.clear();
+    this->delta_output_gate_out.clear();
+    this->delta_cell_state.clear();
+    this->delta_input_gate_out.clear();
+    this->delta_input_block_out.clear();
+
+    this->delta_cell_out.push_back(
+        Eigen::MatrixXd::Zero(output_size, 1));
+    this->delta_output_gate_out.push_back(
+        Eigen::MatrixXd::Zero(output_size, 1));
+    this->delta_cell_state.push_back(
+        Eigen::MatrixXd::Zero(output_size, 1));
+    this->delta_input_gate_out.push_back(
+        Eigen::MatrixXd::Zero(output_size, 1));
+    this->delta_input_block_out.push_back(
+        Eigen::MatrixXd::Zero(output_size, 1));
+}
