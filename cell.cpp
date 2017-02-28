@@ -9,7 +9,6 @@
 #include "weights.hpp"
 #include "cell.hpp"
 #include "functions.hpp"
-#include "iostream"
 
 Cell::Cell(Weights* weights) {
     this->weights = weights;
