@@ -15,30 +15,30 @@ Cell::Cell(Weights* weights) {
     this->reset();
 }
 
-void Cell::compute(Eigen::MatrixXd input) {
+void Cell::compute(Eigen::MatrixXd* input) {
 /*    this->forget_gate_out =
         (this->weights->weight_in_forget_gate * input
         + this->weights->weight_st_forget_gate * previous_cell_state)
         .unaryExpr(&sigmoid); */
-    this->inputs.push_back(input);
+    this->inputs.push_back((*input));
 
     this->input_gate_out.push_back(
-        (this->weights->weight_in_input_gate * input
+        (this->weights->weight_in_input_gate * (*input)
         + this->weights->weight_st_input_gate * this->cell_out.back())
         .unaryExpr(&sigmoid));
 
     this->input_block_out.push_back(
-        (this->weights->weight_in_input_block * input
+        (this->weights->weight_in_input_block * (*input)
         + this->weights->weight_st_input_block * this->cell_out.back())
         .unaryExpr(&tanhyp));
 
     this->output_gate_out.push_back(
-        (this->weights->weight_in_output_gate * input
+        (this->weights->weight_in_output_gate * (*input)
         + this->weights->weight_st_output_gate * this->cell_out.back())
         .unaryExpr(&sigmoid));
 
     this->cell_state.push_back(
-        (this->cell_state.back()/*.cwiseProduct(this->forget_gate_out)*/
+        (this->cell_state.back()
         + this->input_gate_out.back()
         .cwiseProduct(this->input_block_out.back())));
 
@@ -164,6 +164,19 @@ void Cell::reset() {
     this->delta_cell_state.clear();
     this->delta_input_gate_out.clear();
     this->delta_input_block_out.clear();
+
+    this->inputs.push_back(
+        Eigen::MatrixXd::Zero(output_size, 1));
+    this->input_gate_out.push_back(
+        Eigen::MatrixXd::Zero(output_size, 1));
+    this->input_block_out.push_back(
+        Eigen::MatrixXd::Zero(output_size, 1));
+    this->output_gate_out.push_back(
+        Eigen::MatrixXd::Zero(output_size, 1));
+    this->cell_state.push_back(
+        Eigen::MatrixXd::Zero(output_size, 1));
+    this->cell_out.push_back(
+        Eigen::MatrixXd::Zero(output_size, 1));
 
     this->delta_cell_out.push_back(
         Eigen::MatrixXd::Zero(output_size, 1));

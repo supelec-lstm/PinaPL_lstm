@@ -13,6 +13,7 @@
 #include "weights.hpp"
 
 class Cell {
+ public:
     Weights* weights;
     std::vector<Eigen::MatrixXd> inputs;
     // std::vector<Eigen::MatrixXd> forget_gate_out;
@@ -29,10 +30,8 @@ class Cell {
     std::vector<Eigen::MatrixXd> delta_input_gate_out;          // di
     std::vector<Eigen::MatrixXd> delta_input_block_out;         // dz
 
-
- public:
     explicit Cell(Weights* weights);
-    void compute(Eigen::MatrixXd input);
+    void compute(Eigen::MatrixXd* input);
     Eigen::MatrixXd compute_gate_gradient(Eigen::MatrixXd deltas, int time);
     void compute_weight_gradient();
     void update_weights(double lambda);
