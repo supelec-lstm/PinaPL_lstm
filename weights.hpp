@@ -7,13 +7,7 @@
 #ifndef WEIGHTS_HPP
 #define WEIGHTS_HPP
 
-#include <stdlib.h>
 #include <Eigen/Dense>
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <map>
-
 
 class Weights {
  public:
