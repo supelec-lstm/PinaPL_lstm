@@ -22,3 +22,7 @@ double sigmoid_derivative(double x) {
 double tanh_derivative(double x) {
     return 1-tanh(x)*tanh(x);
 }
+
+double tanhyp(double x) {
+    return tanh(x);
+}

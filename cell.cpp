@@ -30,7 +30,7 @@ void Cell::compute(Eigen::MatrixXd input) {
     this->input_block_out.push_back(
         (this->weights->weight_in_input_block * input
         + this->weights->weight_st_input_block * this->cell_out.back())
-        .unaryExpr(&tanh));
+        .unaryExpr(&tanhyp));
 
     this->output_gate_out.push_back(
         (this->weights->weight_in_output_gate * input
@@ -43,7 +43,7 @@ void Cell::compute(Eigen::MatrixXd input) {
         .cwiseProduct(this->input_block_out.back())));
 
     this->cell_out.push_back(
-        this->cell_state.back().unaryExpr(&tanh)
+        this->cell_state.back().unaryExpr(&tanhyp)
         .cwiseProduct(this->output_gate_out.back()));
 }
 
@@ -59,7 +59,7 @@ Eigen::MatrixXd Cell::compute_gate_gradient(Eigen::MatrixXd deltas, int time) {
 
     // Computes do(t)
     delta_output_gate_out.push_back(delta_cell_out.back()
-        .cwiseProduct(cell_state.at(time).unaryExpr(&tanh))
+        .cwiseProduct(cell_state.at(time).unaryExpr(&tanhyp))
         .cwiseProduct(output_gate_out.at(time).cwiseProduct(
             Eigen::MatrixXd::Ones(output_size, 1)-output_gate_out.at(time))));
 

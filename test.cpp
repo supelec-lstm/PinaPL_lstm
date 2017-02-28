@@ -12,7 +12,7 @@
 void single_cell_test() {
     int input_size = 7;
     int output_size = 8;
-    Weights cell_weight = Weights(input_size, output_size);
-    Cell cell = Cell(&cell_weight);
-    printf("cell created");
+    Weights* cell_weight = new Weights(input_size, output_size);
+    Cell cell = Cell(cell_weight);
+    printf("cell created\n");
 }
