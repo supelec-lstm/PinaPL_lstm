@@ -1,26 +1,25 @@
-OBJS = cell.o functions.o network.o weights.o test.o
-CC = gcc
-DEBUG = -g
-CFLAGS = -Wall -c -std=c++11 $(DEBUG)
-LFLAGS = -Wall -std=c++11 $(DEBUG)
+OBJS = main.cpp cell.o functions.o network.o weights.o test.o
+CC = clang++
+CFLAGS = -std=c++11 -Ofast -c
+LFLAGS = -std=c++11 -Ofast
 
-build : $(OBJS)
-	$(CC) $(LFLAGS) $(OBJS) -o build
+Build : $(OBJS)
+	$(CC) $(LFLAGS) -o Build $(OBJS)
 
 cell.o : cell.hpp cell.cpp weights.hpp functions.hpp
-	$(CC) $(CFLAGS) cell.cpp
+	$(CC) $(CFLAGS) cell.cpp -o cell.o
 
 network.o : network.hpp network.cpp
-	$(CC) $(CFLAGS) network.cpp
+	$(CC) $(CFLAGS) network.cpp -o network.o
 
 weights.o : weights.cpp weights.hpp
-	$(CC) $(CFLAGS) weights.cpp
+	$(CC) $(CFLAGS) weights.cpp -o weights.o
 
 functions.o : functions.cpp functions.hpp
-	$(CC) $(CFLAGS) functions.cpp
+	$(CC) $(CFLAGS) functions.cpp -o functions.o
 
 test.o : test.cpp test.hpp
-	$(CC) $(CFLAGS) test.cpp
+	$(CC) $(CFLAGS) test.cpp -o test.o
 
 
 clean:
