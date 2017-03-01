@@ -24,18 +24,18 @@ void Cell::compute(Eigen::MatrixXd* input) {
 
     this->input_gate_out.push_back(
         (this->weights->weight_in_input_gate * (*input)
-        + this->weights->weight_st_input_gate * this->cell_out.back())
-        .unaryExpr(&sigmoid));
+        + this->weights->weight_st_input_gate * this->cell_out.back()
+        + this->weights->bias_input_gate).unaryExpr(&sigmoid));
 
     this->input_block_out.push_back(
         (this->weights->weight_in_input_block * (*input)
-        + this->weights->weight_st_input_block * this->cell_out.back())
-        .unaryExpr(&tanhyp));
+        + this->weights->weight_st_input_block * this->cell_out.back()
+        + this->weights->bias_input_block).unaryExpr(&tanhyp));
 
     this->output_gate_out.push_back(
         (this->weights->weight_in_output_gate * (*input)
-        + this->weights->weight_st_output_gate * this->cell_out.back())
-        .unaryExpr(&sigmoid));
+        + this->weights->weight_st_output_gate * this->cell_out.back()
+        + this->weights->bias_output_gate).unaryExpr(&sigmoid));
 
     this->cell_state.push_back(
         (this->cell_state.back()
@@ -142,6 +142,18 @@ void Cell::compute_weight_gradient() {
         this->weights->delta_weight_st_output_gate +=
             delta_output_gate_out.at(last_item_index - t)
             * cell_out.at(t + 1).transpose();
+    }
+    // Computes dB
+    for (int t = 0; t < last_item_index + 1; ++t) {
+        // Computes dBz
+        this->weights->delta_bias_input_block +=
+            delta_input_block_out.at(last_item_index - t + 1);
+        // Computes dBi
+        this->weights->delta_bias_input_gate +=
+            delta_input_gate_out.at(last_item_index - t + 1);
+        // Computes dBo
+        this->weights->delta_bias_output_gate +=
+            delta_output_gate_out.at(last_item_index - t + 1);
     }
 }
 

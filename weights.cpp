@@ -45,6 +45,11 @@ Weights::Weights(int input_size, int output_size) {
         this->output_size,
         this->output_size);
 
+    this->bias_forget_gate = Eigen::MatrixXd::Random(this->output_size, 1);
+    this->bias_input_gate = Eigen::MatrixXd::Random(this->output_size, 1);
+    this->bias_input_block = Eigen::MatrixXd::Random(this->output_size, 1);
+    this->bias_output_gate = Eigen::MatrixXd::Random(this->output_size, 1);
+
 
 
 // We initialize a null gradient
@@ -80,6 +85,11 @@ Weights::Weights(int input_size, int output_size) {
     this->delta_weight_st_output_gate = Eigen::MatrixXd::Zero(
         this->output_size,
         this->output_size);
+
+    this->bias_forget_gate = Eigen::MatrixXd::Zero(this->output_size, 1);
+    this->bias_input_gate = Eigen::MatrixXd::Zero(this->output_size, 1);
+    this->bias_input_block = Eigen::MatrixXd::Zero(this->output_size, 1);
+    this->bias_output_gate = Eigen::MatrixXd::Zero(this->output_size, 1);
 }
 
 void Weights::apply_gradient(double lambda) {
@@ -116,6 +126,12 @@ void Weights::apply_gradient(double lambda) {
         this->weight_st_output_gate
         - lambda * this->delta_weight_st_output_gate;
 
+    this->bias_forget_gate -= lambda * this->delta_bias_forget_gate;
+    this->bias_input_gate -= lambda * this->delta_bias_input_gate;
+    this->bias_input_block -= lambda * this->delta_bias_input_block;
+    this->bias_output_gate -= lambda * this->delta_bias_output_gate;
+
+
 // We set a null gradient
     this->delta_weight_in_forget_gate = Eigen::MatrixXd::Zero(
         this->output_size,
@@ -148,4 +164,9 @@ void Weights::apply_gradient(double lambda) {
     this->delta_weight_st_output_gate = Eigen::MatrixXd::Zero(
         this->output_size,
         this->output_size);
+
+    this->bias_forget_gate = Eigen::MatrixXd::Zero(this->output_size, 1);
+    this->bias_input_gate = Eigen::MatrixXd::Zero(this->output_size, 1);
+    this->bias_input_block = Eigen::MatrixXd::Zero(this->output_size, 1);
+    this->bias_output_gate = Eigen::MatrixXd::Zero(this->output_size, 1);
 }

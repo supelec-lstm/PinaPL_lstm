@@ -20,6 +20,7 @@ class Weights {
     //   Information :
     // weight_in means the weight matrix applied to the new input
     // weight_st means the weight matrix applied to the previous cell OUT
+
     Eigen::MatrixXd weight_in_forget_gate;                  // Wf
     Eigen::MatrixXd weight_in_input_gate;                   // Wi
     Eigen::MatrixXd weight_in_input_block;                  // Wz
@@ -30,10 +31,15 @@ class Weights {
     Eigen::MatrixXd weight_st_input_block;                  // Rz
     Eigen::MatrixXd weight_st_output_gate;                  // Ro
 
+    Eigen::MatrixXd bias_forget_gate;                       // Bf
+    Eigen::MatrixXd bias_input_gate;                        // Bi
+    Eigen::MatrixXd bias_input_block;                       // Bz
+    Eigen::MatrixXd bias_output_gate;                       // Bo
 
     //   Information :
     // weight_in means the weight matrix applied to the new INPUT
     // weight_st means the weight matrix applied to the previous cell OUT
+
     Eigen::MatrixXd delta_weight_in_forget_gate;           // dWf
     Eigen::MatrixXd delta_weight_in_input_gate;            // dWi
     Eigen::MatrixXd delta_weight_in_input_block;           // dWz
@@ -43,5 +49,10 @@ class Weights {
     Eigen::MatrixXd delta_weight_st_input_gate;            // dRi
     Eigen::MatrixXd delta_weight_st_input_block;           // dRz
     Eigen::MatrixXd delta_weight_st_output_gate;           // dRo
+
+    Eigen::MatrixXd delta_bias_forget_gate;                // Bf
+    Eigen::MatrixXd delta_bias_input_gate;                 // Bi
+    Eigen::MatrixXd delta_bias_input_block;                // Bz
+    Eigen::MatrixXd delta_bias_output_gate;                // Bo
 };
 #endif
