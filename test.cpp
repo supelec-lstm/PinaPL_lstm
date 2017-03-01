@@ -6,6 +6,8 @@
 
 #include <Eigen/Dense>
 #include <vector>
+#include <fstream>
+#include <string>
 #include "weights.hpp"
 #include "cell.hpp"
 #include "test.hpp"
@@ -85,4 +87,38 @@ void single_cell_test() {
 
     std::cout << "Result of learning :" << std::endl;
     std::cout << cell.cell_out.back() << std::endl;
+}
+
+void single_cell_grammar_test() {
+    int input_size = 7;
+    int output_size = 7;
+    int words_to_learn = 50;
+
+    std::cout << "def: input_size = " << std::endl
+    << input_size << std::endl;
+    std::cout << "def: output_size = " << std::endl
+    << output_size << std::endl;
+
+    Weights* cell_weight = new Weights(input_size, output_size);
+    std::cout << "created: cell_weight" << std::endl;
+
+    Cell cell = Cell(cell_weight);
+    std::cout << "created: cell; arg: cell_weight" << std::endl;
+
+    std::ifstream file("reber_test_1M.txt");
+    std::string str;
+    while ((std::getline(file, str)) && (0 < words_to_learn)) {
+        int lenght_word = str.length();
+        for (int i = 0; i < lenght_word; ++i) {
+            std::cout << str.at(i);
+            Eigen::MatrixXd input1(input_size, 1);
+            cell.compute(&input1);
+        }
+        std::cout << std::endl;
+        for (int i = lenght_word + 1; i >= 0; --i) {
+            Eigen::MatrixXd deltas;
+            cell.compute_gate_gradient(&deltas, i);
+        }
+        words_to_learn -= 1;
+    }
 }
