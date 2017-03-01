@@ -12,4 +12,5 @@
 
 void single_cell_test();
 void single_cell_grammar_test();
+Eigen::MatrixXd get_input(char letter);
 #endif

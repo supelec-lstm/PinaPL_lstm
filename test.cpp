@@ -8,10 +8,12 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <vector>
 #include "weights.hpp"
 #include "cell.hpp"
 #include "test.hpp"
 #include "iostream"
+
 
 void single_cell_test() {
     int input_size = 26;
@@ -89,36 +91,70 @@ void single_cell_test() {
     std::cout << cell.cell_out.back() << std::endl;
 }
 
+
+
 void single_cell_grammar_test() {
     int input_size = 7;
     int output_size = 7;
-    int words_to_learn = 50;
-
-    std::cout << "def: input_size = " << std::endl
-    << input_size << std::endl;
-    std::cout << "def: output_size = " << std::endl
-    << output_size << std::endl;
+    int words_to_learn = 50000;
 
     Weights* cell_weight = new Weights(input_size, output_size);
-    std::cout << "created: cell_weight" << std::endl;
-
     Cell cell = Cell(cell_weight);
-    std::cout << "created: cell; arg: cell_weight" << std::endl;
 
     std::ifstream file("reber_test_1M.txt");
     std::string str;
+    std::vector<Eigen::MatrixXd> deltas;
+
     while ((std::getline(file, str)) && (0 < words_to_learn)) {
         int lenght_word = str.length();
         for (int i = 0; i < lenght_word; ++i) {
             std::cout << str.at(i);
-            Eigen::MatrixXd input1(input_size, 1);
-            cell.compute(&input1);
+            Eigen::MatrixXd in = get_input(str.at(i));
+            cell.compute(&in);
+            deltas.push_back((in - cell.cell_out.back())
+                .cwiseProduct((in - cell.cell_out.back())));
         }
         std::cout << std::endl;
-        for (int i = lenght_word + 1; i >= 0; --i) {
-            Eigen::MatrixXd deltas;
-            cell.compute_gate_gradient(&deltas, i);
+
+        for (int i = lenght_word - 1 ; i >= 0; --i) {
+            Eigen::MatrixXd delta = deltas.at(i);
+            cell.compute_gate_gradient(&delta, i);
         }
+        cell.compute_weight_gradient();
+        cell.update_weights(0.3);
+        cell.reset();
         words_to_learn -= 1;
     }
+    Eigen::MatrixXd in(7, 1);
+    in << 1, 0, 0, 0, 0, 0, 0;
+    cell.compute(&in);
+    std::cout << cell.cell_out.back() << std::endl;
+}
+
+Eigen::MatrixXd get_input(char letter) {
+    Eigen::MatrixXd in(7, 1);
+    switch (letter) {
+        case 'B':
+            in << 1, 0, 0, 0, 0, 0, 0;
+            break;
+        case 'T':
+            in << 0, 1, 0, 0, 0, 0, 0;
+            break;
+        case 'P':
+            in << 0, 0, 1, 0, 0, 0, 0;
+            break;
+        case 'S':
+            in << 0, 0, 0, 1, 0, 0, 0;
+            break;
+        case 'X':
+            in << 0, 0, 0, 0, 1, 0, 0;
+            break;
+        case 'V':
+            in << 1, 0, 0, 0, 0, 1, 0;
+            break;
+        case 'E':
+            in << 1, 0, 0, 0, 0, 0, 1;
+            break;
+    }
+    return in;
 }
