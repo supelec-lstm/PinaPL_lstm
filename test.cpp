@@ -59,18 +59,6 @@ void single_cell_test() {
     std::cout << "value: delta = " << std::endl
     << delta1.transpose() << std::endl;
 
-    cell.compute_gate_gradient(&delta1, 1);
-    std::cout << "computed: compute_gate_gradient(&delta1, 1)" << std::endl;
-
-    std::cout << "value: delta_input_gate_out = " << std::endl
-    << cell.delta_input_gate_out.back() << std::endl;
-
-    cell.compute_weight_gradient();
-    std::cout << "computed: compute_weight_gradient()" << std::endl;
-
-    std::cout << "value: delta_weight_in_input_gate = " << std::endl
-    << cell.weights->delta_weight_in_input_gate << std::endl;
-
     std::cout << "End of first caracter in sequence" << std::endl
     << "~~~~~" << std::endl;
 // END FIRST INPUT
@@ -103,8 +91,19 @@ void single_cell_test() {
     std::cout << "value: delta2 = " << std::endl
     << delta2.transpose() << std::endl;
 
+    std::cout << "End of second caracter in sequence" << std::endl
+    << "~~~~~" << std::endl;
+
+
+
     cell.compute_gate_gradient(&delta2, 1);
     std::cout << "computed: compute_gate_gradient(&delta, 1)" << std::endl;
+
+    std::cout << "value: delta_input_gate_out = " << std::endl
+    << cell.delta_input_gate_out.back() << std::endl;
+
+    cell.compute_gate_gradient(&delta1, 0);
+    std::cout << "computed: compute_gate_gradient(&delta1, 0)" << std::endl;
 
     std::cout << "value: delta_input_gate_out = " << std::endl
     << cell.delta_input_gate_out.back() << std::endl;
@@ -115,9 +114,7 @@ void single_cell_test() {
     std::cout << "value: delta_weight_in_input_gate = " << std::endl
     << cell.weights->delta_weight_in_input_gate << std::endl;
 
-    std::cout << "End of second caracter in sequence" << std::endl
-    << "~~~~~" << std::endl;
-// END SECOND INPUT
+// APPLY WEIGHTS
 
     double lambda = 0.5;
     std::cout << "def: lambda = " << std::endl

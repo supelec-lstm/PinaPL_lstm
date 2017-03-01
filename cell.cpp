@@ -59,29 +59,32 @@ Eigen::MatrixXd Cell::compute_gate_gradient(Eigen::MatrixXd* deltas, int time) {
 
     // Computes do(t)
     delta_output_gate_out.push_back(delta_cell_out.back()
-        .cwiseProduct(cell_state.at(time).unaryExpr(&tanhyp))
-        .cwiseProduct(output_gate_out.at(time).cwiseProduct(
-            Eigen::MatrixXd::Ones(output_size, 1)-output_gate_out.at(time))));
+        .cwiseProduct(cell_state.at(time + 1).unaryExpr(&tanhyp))
+        .cwiseProduct(output_gate_out.at(time + 1).cwiseProduct(
+            Eigen::MatrixXd::Ones(output_size, 1)
+            - output_gate_out.at(time + 1))));
 
     // Computes dc(t)
     delta_cell_state.push_back(
         delta_cell_out.back()
-        .cwiseProduct(output_gate_out.at(time))
-        .cwiseProduct(cell_state.at(time).unaryExpr(&tanh_derivative)));
+        .cwiseProduct(output_gate_out.at(time + 1))
+        .cwiseProduct(cell_state.at(time + 1).unaryExpr(&tanh_derivative)));
 
     // Computes di(t)
     delta_input_gate_out.push_back(
         delta_cell_state.back()
-        .cwiseProduct(input_block_out.at(time))
-        .cwiseProduct(input_gate_out.at(time).cwiseProduct(
-            Eigen::MatrixXd::Ones(output_size, 1)-input_gate_out.at(time))) );
+        .cwiseProduct(input_block_out.at(time + 1))
+        .cwiseProduct(input_gate_out.at(time + 1).cwiseProduct(
+            Eigen::MatrixXd::Ones(output_size, 1)
+            - input_gate_out.at(time + 1))) );
 
     // Computes dz(t)
     delta_input_block_out.push_back(
         delta_cell_state.back()
-        .cwiseProduct(input_gate_out.at(time))
-        .cwiseProduct(input_block_out.at(time).cwiseProduct(
-            Eigen::MatrixXd::Ones(output_size, 1)-input_block_out.at(time))) );
+        .cwiseProduct(input_gate_out.at(time + 1))
+        .cwiseProduct(input_block_out.at(time + 1).cwiseProduct(
+            Eigen::MatrixXd::Ones(output_size, 1)
+            - input_block_out.at(time + 1))) );
 
     // Computes dx(t)
     Eigen::MatrixXd delta_input =
@@ -98,47 +101,47 @@ Eigen::MatrixXd Cell::compute_gate_gradient(Eigen::MatrixXd* deltas, int time) {
 }
 
 void Cell::compute_weight_gradient() {
-    int sequence_size = this->inputs.size();
+    int last_item_index = this->inputs.size() - 1;
 
     // Computes dW
-    for (int t = 1; t < sequence_size; ++t) {
+    for (int t = 0; t < last_item_index + 1; ++t) {
         // Computes dWz
         this->weights->delta_weight_in_input_block +=
-            delta_input_block_out.at(sequence_size - t + 1)
-            * inputs.at(t - 1).transpose();
+            delta_input_block_out.at(last_item_index - t + 1)
+            * inputs.at(t).transpose();
 
         // Computes dWi
         this->weights->delta_weight_in_input_gate +=
-            delta_input_gate_out.at(sequence_size - t + 1)
-            * inputs.at(t - 1).transpose();
+            delta_input_gate_out.at(last_item_index - t + 1)
+            * inputs.at(t).transpose();
 
         // Computes dWf
         /*
         this->weights->delta_weight_in_input_block +=
-            delta_input_block_out.at(sequence_size - t + 1)
+            delta_input_block_out.at(last_item_index - t + 1)
             * inputs.at(t).transpose(); */
 
         // Computes dWo
         this->weights->delta_weight_in_output_gate +=
-            delta_output_gate_out.at(sequence_size - t + 1)
-            * inputs.at(t - 1).transpose();
+            delta_output_gate_out.at(last_item_index - t + 1)
+            * inputs.at(t).transpose();
     }
     // Computes dR
-    for (int t = 1; t < sequence_size - 1; ++t) {
+    for (int t = 0; t < last_item_index; ++t) {
         // Computes dRz
         this->weights->delta_weight_st_input_block +=
-            delta_input_block_out.at(sequence_size - t)
-            * cell_out.at(t-1).transpose();
+            delta_input_block_out.at(last_item_index - t)
+            * cell_out.at(t + 1).transpose();
 
         // Computes dRi
         this->weights->delta_weight_st_input_gate +=
-            delta_input_gate_out.at(sequence_size - t)
-            * cell_out.at(t-1).transpose();
+            delta_input_gate_out.at(last_item_index - t)
+            * cell_out.at(t + 1).transpose();
 
         // Computes dRo
         this->weights->delta_weight_st_output_gate +=
-            delta_output_gate_out.at(sequence_size - t)
-            * cell_out.at(t-1).transpose();
+            delta_output_gate_out.at(last_item_index - t)
+            * cell_out.at(t + 1).transpose();
     }
 }
 
