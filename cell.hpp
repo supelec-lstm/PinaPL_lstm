@@ -32,7 +32,7 @@ class Cell {
 
     explicit Cell(Weights* weights);
     void compute(Eigen::MatrixXd* input);
-    Eigen::MatrixXd compute_gate_gradient(Eigen::MatrixXd deltas, int time);
+    Eigen::MatrixXd compute_gate_gradient(Eigen::MatrixXd* deltas, int time);
     void compute_weight_gradient();
     void update_weights(double lambda);
     void reset();

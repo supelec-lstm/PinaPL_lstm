@@ -47,11 +47,11 @@ void Cell::compute(Eigen::MatrixXd* input) {
         .cwiseProduct(this->output_gate_out.back()));
 }
 
-Eigen::MatrixXd Cell::compute_gate_gradient(Eigen::MatrixXd deltas, int time) {
+Eigen::MatrixXd Cell::compute_gate_gradient(Eigen::MatrixXd* deltas, int time) {
     int output_size = this->weights->output_size;
     // Computes dy(t)
     delta_cell_out.push_back(
-        deltas
+        (*deltas)
         + this->weights->weight_st_input_block * delta_input_block_out.back()
         + this->weights->weight_st_input_gate * delta_input_gate_out.back()
 //      + this->weights->weight_st_forget_gate * delta_forget_gate_out.back()
@@ -101,45 +101,44 @@ void Cell::compute_weight_gradient() {
     int sequence_size = this->inputs.size();
 
     // Computes dW
-    for (int t = 0; t < sequence_size; ++t) {
+    for (int t = 1; t < sequence_size; ++t) {
         // Computes dWz
         this->weights->delta_weight_in_input_block +=
-            delta_input_block_out.at(sequence_size - t)
-            * inputs.at(t).transpose();
+            delta_input_block_out.at(sequence_size - t + 1)
+            * inputs.at(t - 1).transpose();
 
         // Computes dWi
         this->weights->delta_weight_in_input_gate +=
-            delta_input_gate_out.at(sequence_size - t)
-            * inputs.at(t).transpose();
+            delta_input_gate_out.at(sequence_size - t + 1)
+            * inputs.at(t - 1).transpose();
 
         // Computes dWf
         /*
         this->weights->delta_weight_in_input_block +=
-            delta_input_block_out.at(sequence_size - t)
+            delta_input_block_out.at(sequence_size - t + 1)
             * inputs.at(t).transpose(); */
 
         // Computes dWo
         this->weights->delta_weight_in_output_gate +=
-            delta_output_gate_out.at(sequence_size - t)
-            * inputs.at(t).transpose();
+            delta_output_gate_out.at(sequence_size - t + 1)
+            * inputs.at(t - 1).transpose();
     }
-
     // Computes dR
-    for (int t = 0; t < sequence_size - 1; ++t) {
+    for (int t = 1; t < sequence_size - 1; ++t) {
         // Computes dRz
         this->weights->delta_weight_st_input_block +=
-            delta_input_block_out.at(sequence_size - t - 1)
-            * cell_out.at(t).transpose();
+            delta_input_block_out.at(sequence_size - t)
+            * cell_out.at(t-1).transpose();
 
         // Computes dRi
         this->weights->delta_weight_st_input_gate +=
-            delta_input_gate_out.at(sequence_size - t - 1)
-            * cell_out.at(t).transpose();
+            delta_input_gate_out.at(sequence_size - t)
+            * cell_out.at(t-1).transpose();
 
         // Computes dRo
         this->weights->delta_weight_st_output_gate +=
-            delta_output_gate_out.at(sequence_size - t - 1)
-            * cell_out.at(t).transpose();
+            delta_output_gate_out.at(sequence_size - t)
+            * cell_out.at(t-1).transpose();
     }
 }
 

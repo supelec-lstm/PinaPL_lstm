@@ -59,8 +59,8 @@ void single_cell_test() {
     std::cout << "value: delta = " << std::endl
     << delta1.transpose() << std::endl;
 
-    cell.compute_gate_gradient(delta1, 1);
-    std::cout << "computed: compute_gate_gradient(delta1, 1)" << std::endl;
+    cell.compute_gate_gradient(&delta1, 1);
+    std::cout << "computed: compute_gate_gradient(&delta1, 1)" << std::endl;
 
     std::cout << "value: delta_input_gate_out = " << std::endl
     << cell.delta_input_gate_out.back() << std::endl;
@@ -103,8 +103,8 @@ void single_cell_test() {
     std::cout << "value: delta2 = " << std::endl
     << delta2.transpose() << std::endl;
 
-    cell.compute_gate_gradient(delta2, 1);
-    std::cout << "computed: compute_gate_gradient(delta, 1)" << std::endl;
+    cell.compute_gate_gradient(&delta2, 1);
+    std::cout << "computed: compute_gate_gradient(&delta, 1)" << std::endl;
 
     std::cout << "value: delta_input_gate_out = " << std::endl
     << cell.delta_input_gate_out.back() << std::endl;
