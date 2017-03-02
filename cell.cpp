@@ -102,7 +102,6 @@ Eigen::MatrixXd Cell::compute_gate_gradient(Eigen::MatrixXd* deltas, int time) {
 
 void Cell::compute_weight_gradient() {
     int last_item_index = this->inputs.size() - 1;
-
     // Computes dW
     for (int t = 0; t < last_item_index + 1; ++t) {
         // Computes dWz
