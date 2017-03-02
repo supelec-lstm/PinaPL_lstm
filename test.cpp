@@ -8,7 +8,6 @@
 #include <vector>
 #include <fstream>
 #include <string>
-#include <vector>
 #include "weights.hpp"
 #include "cell.hpp"
 #include "test.hpp"
@@ -108,13 +107,11 @@ void single_cell_grammar_test() {
     while ((std::getline(file, str)) && (0 < words_to_learn)) {
         int lenght_word = str.length();
         for (int i = 0; i < lenght_word; ++i) {
-            std::cout << str.at(i);
             Eigen::MatrixXd in = get_input(str.at(i));
             cell.compute(&in);
             deltas.push_back((in - cell.cell_out.back())
                 .cwiseProduct((in - cell.cell_out.back())));
         }
-        std::cout << std::endl;
 
         for (int i = lenght_word - 1 ; i >= 0; --i) {
             Eigen::MatrixXd delta = deltas.at(i);

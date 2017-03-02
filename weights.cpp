@@ -86,10 +86,10 @@ Weights::Weights(int input_size, int output_size) {
         this->output_size,
         this->output_size);
 
-    this->bias_forget_gate = Eigen::MatrixXd::Zero(this->output_size, 1);
-    this->bias_input_gate = Eigen::MatrixXd::Zero(this->output_size, 1);
-    this->bias_input_block = Eigen::MatrixXd::Zero(this->output_size, 1);
-    this->bias_output_gate = Eigen::MatrixXd::Zero(this->output_size, 1);
+    this->delta_bias_forget_gate = Eigen::MatrixXd::Zero(this->output_size, 1);
+    this->delta_bias_input_gate = Eigen::MatrixXd::Zero(this->output_size, 1);
+    this->delta_bias_input_block = Eigen::MatrixXd::Zero(this->output_size, 1);
+    this->delta_bias_output_gate = Eigen::MatrixXd::Zero(this->output_size, 1);
 }
 
 void Weights::apply_gradient(double lambda) {
