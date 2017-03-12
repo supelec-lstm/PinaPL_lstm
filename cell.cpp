@@ -108,7 +108,16 @@ void Cell::compute_weight_gradient() {
         this->weights->delta_weight_in_input_block +=
             delta_input_block_out.at(last_item_index - t + 1)
             * inputs.at(t).transpose();
-
+/*
+        std::cout << "computeWG : "<< t << std::endl;
+        std::cout << delta_input_gate_out.at(last_item_index - t + 1)
+        << std::endl;
+        std::cout << " * " << std::endl;
+        std::cout << inputs.at(t).transpose() << std::endl;
+        std::cout << " = " << std::endl;
+        std::cout << delta_input_gate_out.at(last_item_index - t + 1)
+        * inputs.at(t).transpose() << std::endl;
+*/
         // Computes dWi
         this->weights->delta_weight_in_input_gate +=
             delta_input_gate_out.at(last_item_index - t + 1)

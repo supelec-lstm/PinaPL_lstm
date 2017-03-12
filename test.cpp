@@ -15,8 +15,8 @@
 
 
 void single_cell_test() {
-    int input_size = 26;
-    int output_size = 26;
+    int input_size = 4;
+    int output_size = 4;
 
     std::cout << "sequence_size is 4, word is warp" << std::endl;
     std::cout
@@ -38,55 +38,69 @@ void single_cell_test() {
     std::vector<Eigen::MatrixXd> inputs;
 
     Eigen::MatrixXd inputW(input_size, 1);
-    inputW << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 1, 0, 0, 0;
+    inputW << 1, 0, 0, 0;
 
     Eigen::MatrixXd inputA(input_size, 1);
-    inputA << 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0;
+    inputA << 0, 1, 0, 0;
 
     Eigen::MatrixXd inputR(input_size, 1);
-    inputR << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
-    0, 0, 0, 0, 0, 0;
+    inputR << 0, 0, 1, 0;
 
     Eigen::MatrixXd inputP(input_size, 1);
-    inputP << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0;
+    inputP << 0, 0, 0, 1;
 
     inputs.push_back(inputW);
     inputs.push_back(inputA);
     inputs.push_back(inputR);
     inputs.push_back(inputP);
 
-    for (int j=0; j < 10000; j++) {
-      std::vector<Eigen::MatrixXd> deltas;
+    std::vector<Eigen::MatrixXd> deltas;
 
-      for (int i=0; i < 4; ++i) {
-        Eigen::MatrixXd input = inputs.at(i);
+    for (int j=0; j < 20000; j++) {
+        std::cout << "run :" << j << std::endl;
 
-        cell.compute(&input);
+        for (int i=0; i < 4; ++i) {
+            Eigen::MatrixXd input = inputs.at(i);
 
-        Eigen::MatrixXd output = cell.cell_out.back();
+            cell.compute(&input);
 
-        Eigen::MatrixXd delta(output_size, 1);
-        delta = (output-input).cwiseProduct(output-input);
+            Eigen::MatrixXd output = cell.cell_out.back();
 
-        deltas.push_back(delta);
-      }
+            Eigen::MatrixXd delta(output_size, 1);
+            delta = (output-input).cwiseProduct(output-input);
 
-      for (int i=4-1; i >= 0; --i) {
-        cell.compute_gate_gradient(&deltas.at(i), i);
-      }
+            deltas.push_back(delta);
+        }
 
-      double lambda = 0.1;
-      cell.update_weights(lambda);
+        for (int i=4-1; i >= 0; --i) {
+            cell.compute_gate_gradient(&deltas.at(i), i);
+            std::cout << "gate gradient input gate" << std::endl;
+            std::cout << cell.delta_input_gate_out.at(4-i) << std::endl;
+        }
 
-      cell.reset();
+        double lambda = 0.5;
+        cell.compute_weight_gradient();
+        std::cout << "====== delta poids input_gate ======" << std::endl;
+        std::cout << cell_weight->delta_weight_in_input_gate << std::endl;
+        std::cout << cell.weights->delta_weight_st_input_gate << std::endl;
+
+        cell.update_weights(lambda);
+        deltas.clear();
+        cell.reset();
     }
 
     cell.compute(&inputW);
 
     std::cout << "Result of learning :" << std::endl;
+    std::cout << cell.cell_out.back() << std::endl;
+
+    cell.compute(&inputA);
+    std::cout << cell.cell_out.back() << std::endl;
+
+    cell.compute(&inputR);
+    std::cout << cell.cell_out.back() << std::endl;
+
+    cell.compute(&inputP);
     std::cout << cell.cell_out.back() << std::endl;
 }
 

@@ -13,42 +13,46 @@ Weights::Weights(int input_size, int output_size) {
     this->output_size = output_size;
 
 // We initialize random weights
-    this->weight_in_forget_gate = Eigen::MatrixXd::Random(
+    this->weight_in_forget_gate = 0.1 * Eigen::MatrixXd::Random(
         this->output_size,
         this->input_size);
 
-    this->weight_in_input_gate = Eigen::MatrixXd::Random(
+    this->weight_in_input_gate = 0.1 * Eigen::MatrixXd::Random(
         this->output_size,
         this->input_size);
 
-    this->weight_in_input_block = Eigen::MatrixXd::Random(
+    this->weight_in_input_block = 0.1 * Eigen::MatrixXd::Random(
         this->output_size,
         this->input_size);
 
-    this->weight_in_output_gate = Eigen::MatrixXd::Random(
+    this->weight_in_output_gate = 0.1 * Eigen::MatrixXd::Random(
         this->output_size,
         this->input_size);
 
-    this->weight_st_forget_gate = Eigen::MatrixXd::Random(
+    this->weight_st_forget_gate = 0.1 * Eigen::MatrixXd::Random(
         this->output_size,
         this->output_size);
 
-    this->weight_st_input_gate = Eigen::MatrixXd::Random(
+    this->weight_st_input_gate = 0.1 * Eigen::MatrixXd::Random(
         this->output_size,
         this->output_size);
 
-    this->weight_st_input_block = Eigen::MatrixXd::Random(
+    this->weight_st_input_block = 0.1 * Eigen::MatrixXd::Random(
         this->output_size,
         this->output_size);
 
-    this->weight_st_output_gate = Eigen::MatrixXd::Random(
+    this->weight_st_output_gate = 0.1 * Eigen::MatrixXd::Random(
         this->output_size,
         this->output_size);
 
-    this->bias_forget_gate = Eigen::MatrixXd::Random(this->output_size, 1);
-    this->bias_input_gate = Eigen::MatrixXd::Random(this->output_size, 1);
-    this->bias_input_block = Eigen::MatrixXd::Random(this->output_size, 1);
-    this->bias_output_gate = Eigen::MatrixXd::Random(this->output_size, 1);
+    this->bias_forget_gate = 0.1
+        * Eigen::MatrixXd::Random(this->output_size, 1);
+    this->bias_input_gate = 0.1
+        * Eigen::MatrixXd::Random(this->output_size, 1);
+    this->bias_input_block = 0.1
+        * Eigen::MatrixXd::Random(this->output_size, 1);
+    this->bias_output_gate = 0.1
+        * Eigen::MatrixXd::Random(this->output_size, 1);
 
 
 
