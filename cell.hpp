@@ -8,12 +8,14 @@
 
 #include <math.h>
 #include <Eigen/Dense>
+#include <vector>
 
 #include "weights.hpp"
 
 class Cell {
     Weights* weights;
-    Eigen::MatrixXd full_input;
+    Eigen::MatrixXd input;
+    Eigen::MatrixXd previous_output;
     Eigen::MatrixXd forget_gate_out;
     Eigen::MatrixXd input_gate_out;
     Eigen::MatrixXd input_block_out;
@@ -28,6 +30,8 @@ class Cell {
         Eigen::MatrixXd previous_output,
         Eigen::MatrixXd previous_memory,
         Eigen::MatrixXd input);
-    Eigen::MatrixXd compute_gradient(Eigen::MatrixXd deltas);
+    std::vector<Eigen::MatrixXd> compute_gradient(Eigen::MatrixXd deltas,
+        Eigen::MatrixXd previous_delta_cell_in,
+        Eigen::MatrixXd previous_delta_cell_state);
 };
 #endif
