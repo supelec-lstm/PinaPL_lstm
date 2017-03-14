@@ -32,8 +32,6 @@ void single_cell_test() {
 
     Weights* cell_weight = new Weights(input_size, output_size);
 
-    Cell cell = Cell(cell_weight);
-
     std::vector<Eigen::MatrixXd> inputs;
 
     Eigen::MatrixXd inputW(input_size, 1);
@@ -57,7 +55,7 @@ void single_cell_test() {
     inputs.push_back(inputR);
     inputs.push_back(inputP);
 
-    for (int j=0; j < 100; j++) {
+    for (int j=0; j < 10000; j++) {
         // std::cout << "Starting propagation" << std::endl;
         std::vector<Eigen::MatrixXd> deltas;
         std::vector<Eigen::MatrixXd> result;
@@ -66,15 +64,20 @@ void single_cell_test() {
         Eigen::MatrixXd previous_memory =
             Eigen::MatrixXd::Zero(output_size, 1);
 
-        for (int i=0; i < 4; ++i) {
+        std::vector<Cell> network;
+
+        for (int i=0; i < 3; ++i) {
+            Cell cell = Cell(cell_weight);
+
             Eigen::MatrixXd input = inputs.at(i);
 
             result = cell.compute(&previous_output, &previous_memory, &input);
             previous_output = result.at(0);
-            deltas.push_back((previous_output - input)
-                .cwiseProduct(previous_output - input));
+            deltas.push_back((previous_output - inputs.at(i+1))
+                .cwiseProduct(previous_output - inputs.at(i+1)));
 
             previous_memory = result.at(1);
+            network.push_back(cell);
         }
 
     // std::cout << "Porgagation done, starting backpropagation" << std::endl;
@@ -84,12 +87,11 @@ void single_cell_test() {
         Eigen::MatrixXd previous_delta_cell_state =
             Eigen::MatrixXd::Zero(output_size, 1);
 
-        for (int i=4-1; i >= 0; --i) {
-            std::cout << i << std::endl;
-            result = cell.compute_gradient(&deltas.at(i),
+        for (int i=3-1; i >= 0; --i) {
+            result = network.at(i).compute_gradient(&deltas.at(i),
                 &previous_delta_cell_in, &previous_delta_cell_state);
         }
-        cell_weight->apply_gradient(0.1);
+        cell_weight->apply_gradient(0.3);
     }
 
     std::cout << "Learning done" << std::endl;
@@ -100,12 +102,17 @@ void single_cell_test() {
     Eigen::MatrixXd previous_memory =
         Eigen::MatrixXd::Zero(output_size, 1);
 
-    for (int i=0; i < 4; ++i) {
+    std::vector<Cell> network;
+
+    for (int i=0; i < 3; ++i) {
+        Cell cell = Cell(cell_weight);
+
         Eigen::MatrixXd input = inputs.at(i);
 
         result = cell.compute(&previous_output, &previous_memory, &input);
         previous_output = result.at(0);
         previous_memory = result.at(1);
+        network.push_back(cell);
         std::cout << "=====================================" << std::endl;
         std::cout << previous_output << std::endl;
     }
@@ -118,7 +125,6 @@ void single_cell_grammar_test() {
     int words_to_learn = 50000;
 
     Weights* cell_weight = new Weights(input_size, output_size);
-    Cell cell = Cell(cell_weight);
 
     std::ifstream file("reber_test_1M.txt");
     std::string str;
@@ -134,13 +140,18 @@ void single_cell_grammar_test() {
         Eigen::MatrixXd previous_memory =
             Eigen::MatrixXd::Zero(output_size, 1);
 
-        for (int i = 0; i < lenght_word; ++i) {
+        std::vector<Cell> network;
+
+        for (int i = 0; i < lenght_word-1; ++i) {
+            Cell cell = Cell(cell_weight);
             Eigen::MatrixXd in = get_input(str.at(i));
+            Eigen::MatrixXd expected = get_input(str.at(i+1));
             result = cell.compute(&previous_output, &previous_memory, &in);
             previous_output = result.at(0);
-            deltas.push_back((previous_output - in)
-                .cwiseProduct(previous_output - in));
+            deltas.push_back((previous_output - expected)
+                .cwiseProduct(previous_output - expected));
             previous_memory = result.at(1);
+            network.push_back(cell);
         }
 
         Eigen::MatrixXd previous_delta_cell_in =
@@ -148,11 +159,11 @@ void single_cell_grammar_test() {
         Eigen::MatrixXd previous_delta_cell_state =
             Eigen::MatrixXd::Zero(output_size, 1);
 
-        for (int i=lenght_word-1; i >= 0; --i) {
-            result = cell.compute_gradient(&deltas.at(i),
+        for (int i = lenght_word-2; i >= 0; --i) {
+            result = network.at(i).compute_gradient(&deltas.at(i),
                 &previous_delta_cell_in, &previous_delta_cell_state);
         }
-        cell_weight->apply_gradient(0.01);
+        cell_weight->apply_gradient(0.1);
     }
     std::cout << "Learning done" << std::endl;
 }
