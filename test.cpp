@@ -85,6 +85,7 @@ void single_cell_test() {
             Eigen::MatrixXd::Zero(output_size, 1);
 
         for (int i=4-1; i >= 0; --i) {
+            std::cout << i << std::endl;
             result = cell.compute_gradient(&deltas.at(i),
                 &previous_delta_cell_in, &previous_delta_cell_state);
         }
@@ -105,6 +106,7 @@ void single_cell_test() {
         result = cell.compute(&previous_output, &previous_memory, &input);
         previous_output = result.at(0);
         previous_memory = result.at(1);
+        std::cout << "=====================================" << std::endl;
         std::cout << previous_output << std::endl;
     }
 }

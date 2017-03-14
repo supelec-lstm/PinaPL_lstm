@@ -32,9 +32,6 @@ std::vector<Eigen::MatrixXd> Cell::compute(
         + this->weights->weight_st_input_gate * *previous_cell_state)
         .unaryExpr(&sigmoid);
 
-    std::cout << "still not broken here" << std::endl;
-
-
     this->input_block_out =
         (this->weights->weight_in_input_block * *input
         + this->weights->weight_st_input_block * *previous_cell_state)
@@ -64,6 +61,7 @@ std::vector<Eigen::MatrixXd> Cell::compute_gradient(Eigen::MatrixXd* deltas,
 
 // Computes dy
     Eigen::MatrixXd delta_cell_out = *previous_delta_cell_in + *deltas;
+
 // Comptutes do
     Eigen::MatrixXd delta_output_gate = delta_cell_out.cwiseProduct(
         cell_state.unaryExpr(&tanh).cwiseProduct(output_gate_out).cwiseProduct(
@@ -71,10 +69,10 @@ std::vector<Eigen::MatrixXd> Cell::compute_gradient(Eigen::MatrixXd* deltas,
         - output_gate_out));
 
     this->weights->delta_weight_in_output_gate +=
-        delta_output_gate * this->input;
+        delta_output_gate * this->input.transpose();
 
     this->weights->delta_weight_st_output_gate +=
-        delta_output_gate * this->previous_output;
+        delta_output_gate * this->previous_output.transpose();
 
 // Computes dc
     Eigen::MatrixXd delta_cell_state = *previous_delta_cell_state
@@ -92,10 +90,11 @@ std::vector<Eigen::MatrixXd> Cell::compute_gradient(Eigen::MatrixXd* deltas,
         (Eigen::MatrixXd::Ones(input_gate_out.rows(), input_gate_out.cols()) -
         input_gate_out));
 
-    this->weights->delta_weight_in_input_gate += delta_input_gate * this->input;
+    this->weights->delta_weight_in_input_gate +=
+        delta_input_gate * this->input.transpose();
 
     this->weights->delta_weight_st_input_gate +=
-        delta_input_gate * this->previous_output;
+        delta_input_gate * this->previous_output.transpose();
 
 // Computes dz
     Eigen::MatrixXd delta_input_block =
@@ -104,10 +103,10 @@ std::vector<Eigen::MatrixXd> Cell::compute_gradient(Eigen::MatrixXd* deltas,
         input_block_out.array().pow(2).matrix()));  // Worst line ever :)
 
     this->weights->delta_weight_in_input_block +=
-        delta_input_block * this->input;
+        delta_input_block * this->input.transpose();
 
     this->weights->delta_weight_st_input_block +=
-        delta_input_block * this->previous_output;
+        delta_input_block * this->previous_output.transpose();
 
 // Computes dx
     Eigen::MatrixXd delta_input =
