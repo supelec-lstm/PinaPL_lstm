@@ -19,5 +19,6 @@ double sigmoid(double x);
 double sigmoid_derivative(double x);
 double tanh_derivative(double x);
 double tanh2(double x);
+double tanhyp(double x);
 
 #endif

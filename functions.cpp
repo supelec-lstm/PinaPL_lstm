@@ -27,3 +27,7 @@ double tanh2(double x) {
     double y = tanh(x);
     return y*y;
 }
+
+double tanhyp(double x) {
+    return tanh(x);
+}
