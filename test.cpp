@@ -71,7 +71,7 @@ void single_cell_test() {
 
             Eigen::MatrixXd input = inputs.at(i);
 
-            result = cell.compute(&previous_output, &previous_memory, &input);
+            result = cell.compute(previous_output, &previous_memory, input);
             previous_output = result.at(0);
             deltas.push_back((previous_output - inputs.at(i+1))
                 .cwiseProduct(previous_output - inputs.at(i+1)));
@@ -109,7 +109,7 @@ void single_cell_test() {
 
         Eigen::MatrixXd input = inputs.at(i);
 
-        result = cell.compute(&previous_output, &previous_memory, &input);
+        result = cell.compute(previous_output, &previous_memory, input);
         previous_output = result.at(0);
         previous_memory = result.at(1);
         network.push_back(cell);
@@ -146,7 +146,7 @@ void single_cell_grammar_test() {
             Cell cell = Cell(cell_weight);
             Eigen::MatrixXd in = get_input(str.at(i));
             Eigen::MatrixXd expected = get_input(str.at(i+1));
-            result = cell.compute(&previous_output, &previous_memory, &in);
+            result = cell.compute(previous_output, &previous_memory, in);
             previous_output = result.at(0);
             deltas.push_back((previous_output - expected)
                 .cwiseProduct(previous_output - expected));
@@ -166,6 +166,36 @@ void single_cell_grammar_test() {
         cell_weight->apply_gradient(0.1);
     }
     std::cout << "Learning done" << std::endl;
+
+    Eigen::MatrixXd previous_output =
+        Eigen::MatrixXd::Zero(output_size, 1);
+    Eigen::MatrixXd previous_memory =
+        Eigen::MatrixXd::Zero(output_size, 1);
+
+    Cell cell = Cell(cell_weight);
+    std::vector<Eigen::MatrixXd> result;
+    Eigen::MatrixXd B = get_input('B');
+    Eigen::MatrixXd P = get_input('P');
+    Eigen::MatrixXd V = get_input('V');
+    Eigen::MatrixXd E = get_input('E');
+
+    std::cout << "========= On donne B ========" << std::endl;
+    result = cell.compute(previous_output, &previous_memory, B);
+    previous_output = result.at(0);
+    previous_memory = result.at(1);
+    std::cout << result.at(0) << std::endl;
+
+    std::cout << "========= On donne P ========" << std::endl;
+    result = cell.compute(previous_output, &previous_memory, P);
+    previous_output = result.at(0);
+    previous_memory = result.at(1);
+    std::cout << result.at(0) << std::endl;
+
+    std::cout << "========= On donne V ========" << std::endl;
+    result = cell.compute(previous_output, &previous_memory, V);
+    previous_output = result.at(0);
+    previous_memory = result.at(1);
+    std::cout << result.at(0) << std::endl;
 }
 /*
 void single_cell_grammar_test() {
@@ -223,10 +253,10 @@ Eigen::MatrixXd get_input(char letter) {
             in << 0, 0, 0, 0, 1, 0, 0;
             break;
         case 'V':
-            in << 1, 0, 0, 0, 0, 1, 0;
+            in << 0, 0, 0, 0, 0, 1, 0;
             break;
         case 'E':
-            in << 1, 0, 0, 0, 0, 0, 1;
+            in << 0, 0, 0, 0, 0, 0, 1;
             break;
     }
     return in;

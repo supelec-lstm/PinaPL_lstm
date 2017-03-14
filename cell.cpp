@@ -15,30 +15,30 @@ Cell::Cell(Weights* weights) {
 }
 
 std::vector<Eigen::MatrixXd> Cell::compute(
-    Eigen::MatrixXd *previous_output,
+    Eigen::MatrixXd previous_output,
     Eigen::MatrixXd *previous_cell_state,
-    Eigen::MatrixXd *input) {
+    Eigen::MatrixXd input) {
 
 /*    this->forget_gate_out =
         (this->weights->weight_in_forget_gate * input
         + this->weights->weight_st_forget_gate * previous_cell_state)
         .unaryExpr(&sigmoid); */
 
-    this->input = *input;
-    this->previous_output = *previous_output;
+    this->input = input;
+    this->previous_output = previous_output;
 
     this->input_gate_out =
-        (this->weights->weight_in_input_gate * *input
+        (this->weights->weight_in_input_gate * input
         + this->weights->weight_st_input_gate * *previous_cell_state)
         .unaryExpr(&sigmoid);
 
     this->input_block_out =
-        (this->weights->weight_in_input_block * *input
+        (this->weights->weight_in_input_block * input
         + this->weights->weight_st_input_block * *previous_cell_state)
         .unaryExpr(&tanhyp);
 
     this->output_gate_out =
-        (this->weights->weight_in_output_gate * *input
+        (this->weights->weight_in_output_gate * input
         + this->weights->weight_st_output_gate * *previous_cell_state)
         .unaryExpr(&sigmoid);
 

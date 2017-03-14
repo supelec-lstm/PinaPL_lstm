@@ -28,9 +28,9 @@ class Cell {
  public:
     explicit Cell(Weights* weights);
     std::vector<Eigen::MatrixXd> compute(
-        Eigen::MatrixXd *previous_output,
+        Eigen::MatrixXd previous_output,
         Eigen::MatrixXd *previous_memory,
-        Eigen::MatrixXd *input);
+        Eigen::MatrixXd input);
     std::vector<Eigen::MatrixXd> compute_gradient(Eigen::MatrixXd* deltas,
         Eigen::MatrixXd* previous_delta_cell_in,
         Eigen::MatrixXd* previous_delta_cell_state);
