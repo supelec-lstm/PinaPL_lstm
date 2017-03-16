@@ -56,10 +56,10 @@ void single_cell_test() {
 
     std::vector<Eigen::MatrixXd> deltas;
 
-    for (int j=0; j < 20000; j++) {
+    for (int j=0; j < 1000; j++) {
         std::cout << "run :" << j << std::endl;
 
-        for (int i=0; i < 4; ++i) {
+        for (int i=0; i < 3; ++i) {
             Eigen::MatrixXd input = inputs.at(i);
 
             cell.compute(&input);
@@ -67,22 +67,22 @@ void single_cell_test() {
             Eigen::MatrixXd output = cell.cell_out.back();
 
             Eigen::MatrixXd delta(output_size, 1);
-            delta = (output-input).cwiseProduct(output-input);
+            delta = (output-inputs.at(i+1)).cwiseProduct(output-inputs.at(i+1));
 
             deltas.push_back(delta);
         }
 
-        for (int i=4-1; i >= 0; --i) {
+        for (int i=3-1; i >= 0; --i) {
             cell.compute_gate_gradient(&deltas.at(i), i);
-            std::cout << "gate gradient input gate" << std::endl;
-            std::cout << cell.delta_input_gate_out.at(4-i) << std::endl;
+            // std::cout << "gate gradient input gate" << std::endl;
+            // std::cout << cell.delta_input_gate_out.at(3-i) << std::endl;
         }
 
-        double lambda = 0.5;
+        double lambda = -0.1;
         cell.compute_weight_gradient();
-        std::cout << "====== delta poids input_gate ======" << std::endl;
-        std::cout << cell_weight->delta_weight_in_input_gate << std::endl;
-        std::cout << cell.weights->delta_weight_st_input_gate << std::endl;
+        // std::cout << "====== delta poids input_gate ======" << std::endl;
+        // std::cout << cell_weight->delta_weight_in_input_gate << std::endl;
+        // std::cout << cell.weights->delta_weight_st_input_gate << std::endl;
 
         cell.update_weights(lambda);
         deltas.clear();
@@ -95,12 +95,11 @@ void single_cell_test() {
     std::cout << cell.cell_out.back() << std::endl;
 
     cell.compute(&inputA);
+    std::cout << "------------------" << std::endl;
     std::cout << cell.cell_out.back() << std::endl;
 
     cell.compute(&inputR);
-    std::cout << cell.cell_out.back() << std::endl;
-
-    cell.compute(&inputP);
+    std::cout << "------------------" << std::endl;
     std::cout << cell.cell_out.back() << std::endl;
 }
 
@@ -109,7 +108,7 @@ void single_cell_test() {
 void single_cell_grammar_test() {
     int input_size = 7;
     int output_size = 7;
-    int words_to_learn = 50000;
+    int words_to_learn = 5;
 
     Weights* cell_weight = new Weights(input_size, output_size);
     Cell cell = Cell(cell_weight);
@@ -120,14 +119,15 @@ void single_cell_grammar_test() {
 
     while ((std::getline(file, str)) && (0 < words_to_learn)) {
         int lenght_word = str.length();
-        for (int i = 0; i < lenght_word; ++i) {
+        for (int i = 0; i < lenght_word-1; ++i) {
             Eigen::MatrixXd in = get_input(str.at(i));
+            Eigen::MatrixXd expected = get_input(str.at(i+1));
             cell.compute(&in);
-            deltas.push_back((in - cell.cell_out.back())
-                .cwiseProduct((in - cell.cell_out.back())));
+            deltas.push_back((expected - cell.cell_out.back())
+                .cwiseProduct((expected - cell.cell_out.back())));
         }
 
-        for (int i = lenght_word - 1 ; i >= 0; --i) {
+        for (int i = lenght_word - 2 ; i >= 0; --i) {
             Eigen::MatrixXd delta = deltas.at(i);
             cell.compute_gate_gradient(&delta, i);
         }
@@ -136,9 +136,22 @@ void single_cell_grammar_test() {
         cell.reset();
         words_to_learn -= 1;
     }
-    Eigen::MatrixXd in(7, 1);
-    in << 1, 0, 0, 0, 0, 0, 0;
-    cell.compute(&in);
+
+    Eigen::MatrixXd B = get_input('B');
+    Eigen::MatrixXd P = get_input('P');
+    Eigen::MatrixXd V = get_input('V');
+    Eigen::MatrixXd E = get_input('E');
+    std::cout << "==================" << std::endl;
+    cell.compute(&B);
+    std::cout << cell.cell_out.back() << std::endl;
+    std::cout << "------------------" << std::endl;
+    cell.compute(&P);
+    std::cout << cell.cell_out.back() << std::endl;
+    std::cout << "------------------" << std::endl;
+    cell.compute(&V);
+    std::cout << cell.cell_out.back() << std::endl;
+    std::cout << "------------------" << std::endl;
+    cell.compute(&V);
     std::cout << cell.cell_out.back() << std::endl;
 }
 
