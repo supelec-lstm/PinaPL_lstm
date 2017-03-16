@@ -15,35 +15,35 @@ Weights::Weights(int input_size, int output_size) {
 // We initialize random weights
     this->weight_in_forget_gate = Eigen::MatrixXd::Random(
         this->output_size,
-        this->input_size);
+        this->input_size) * 0.1;
 
     this->weight_in_input_gate = Eigen::MatrixXd::Random(
         this->output_size,
-        this->input_size);
+        this->input_size) * 0.1;
 
     this->weight_in_input_block = Eigen::MatrixXd::Random(
         this->output_size,
-        this->input_size);
+        this->input_size) * 0.1;
 
     this->weight_in_output_gate = Eigen::MatrixXd::Random(
         this->output_size,
-        this->input_size);
+        this->input_size) * 0.1;
 
     this->weight_st_forget_gate = Eigen::MatrixXd::Random(
         this->output_size,
-        this->output_size);
+        this->output_size) * 0.1;
 
     this->weight_st_input_gate = Eigen::MatrixXd::Random(
         this->output_size,
-        this->output_size);
+        this->output_size) * 0.1;
 
     this->weight_st_input_block = Eigen::MatrixXd::Random(
         this->output_size,
-        this->output_size);
+        this->output_size) * 0.1;
 
     this->weight_st_output_gate = Eigen::MatrixXd::Random(
         this->output_size,
-        this->output_size);
+        this->output_size) * 0.1;
 
 
 
