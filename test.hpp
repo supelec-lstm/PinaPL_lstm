@@ -17,5 +17,6 @@
 
 void single_cell_test();
 void single_cell_grammar_test();
-Eigen::MatrixXd get_input(char letter);
+Eigen::MatrixXd get_input_bias(char letter);
+Eigen::MatrixXd get_input_no_bias(char letter);
 #endif

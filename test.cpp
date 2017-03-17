@@ -55,7 +55,7 @@ void single_cell_test() {
     inputs.push_back(inputR);
     inputs.push_back(inputP);
 
-    for (int j=0; j < 10000; j++) {
+    for (int j=0; j < 1; j++) {
         // std::cout << "Starting propagation" << std::endl;
         std::vector<Eigen::MatrixXd> deltas;
         std::vector<Eigen::MatrixXd> result;
@@ -120,15 +120,17 @@ void single_cell_test() {
 
 
 void single_cell_grammar_test() {
-    int input_size = 7;
+    int input_size = 8;
     int output_size = 7;
-    int words_to_learn = 50000;
+    int words_to_learn = 2000;
 
     Weights* cell_weight = new Weights(input_size, output_size);
 
     std::ifstream file("reber_test_1M.txt");
     std::string str;
     std::vector<Eigen::MatrixXd> deltas;
+
+    std::cout << "Learning started" << std::endl;
 
     while ((std::getline(file, str)) && (0 < words_to_learn)) {
         int lenght_word = str.length();
@@ -144,8 +146,8 @@ void single_cell_grammar_test() {
 
         for (int i = 0; i < lenght_word-1; ++i) {
             Cell cell = Cell(cell_weight);
-            Eigen::MatrixXd in = get_input(str.at(i));
-            Eigen::MatrixXd expected = get_input(str.at(i+1));
+            Eigen::MatrixXd in = get_input_bias(str.at(i));
+            Eigen::MatrixXd expected = get_input_no_bias(str.at(i+1));
             result = cell.compute(previous_output, &previous_memory, in);
             previous_output = result.at(0);
             deltas.push_back((previous_output - expected)
@@ -164,6 +166,7 @@ void single_cell_grammar_test() {
                 &previous_delta_cell_in, &previous_delta_cell_state);
         }
         cell_weight->apply_gradient(0.1);
+        words_to_learn -= 1;
     }
     std::cout << "Learning done" << std::endl;
 
@@ -174,10 +177,10 @@ void single_cell_grammar_test() {
 
     Cell cell = Cell(cell_weight);
     std::vector<Eigen::MatrixXd> result;
-    Eigen::MatrixXd B = get_input('B');
-    Eigen::MatrixXd P = get_input('P');
-    Eigen::MatrixXd V = get_input('V');
-    Eigen::MatrixXd E = get_input('E');
+    Eigen::MatrixXd B = get_input_bias('B');
+    Eigen::MatrixXd P = get_input_bias('P');
+    Eigen::MatrixXd V = get_input_bias('V');
+    Eigen::MatrixXd E = get_input_bias('E');
 
     std::cout << "========= On donne B ========" << std::endl;
     result = cell.compute(previous_output, &previous_memory, B);
@@ -213,7 +216,7 @@ void single_cell_grammar_test() {
     while ((std::getline(file, str)) && (0 < words_to_learn)) {
         int lenght_word = str.length();
         for (int i = 0; i < lenght_word; ++i) {
-            Eigen::MatrixXd in = get_input(str.at(i));
+            Eigen::MatrixXd in = get_input_bias(str.at(i));
             cell.compute(&in);
             deltas.push_back((in - cell.cell_out.back())
                 .cwiseProduct((in - cell.cell_out.back())));
@@ -234,7 +237,35 @@ void single_cell_grammar_test() {
     std::cout << cell.cell_out.back() << std::endl;
 }
 */
-Eigen::MatrixXd get_input(char letter) {
+Eigen::MatrixXd get_input_bias(char letter) {
+    Eigen::MatrixXd in(8, 1);
+    switch (letter) {
+        case 'B':
+            in << 1, 0, 0, 0, 0, 0, 0, 1;
+            break;
+        case 'T':
+            in << 0, 1, 0, 0, 0, 0, 0, 1;
+            break;
+        case 'P':
+            in << 0, 0, 1, 0, 0, 0, 0, 1;
+            break;
+        case 'S':
+            in << 0, 0, 0, 1, 0, 0, 0, 1;
+            break;
+        case 'X':
+            in << 0, 0, 0, 0, 1, 0, 0, 1;
+            break;
+        case 'V':
+            in << 0, 0, 0, 0, 0, 1, 0, 1;
+            break;
+        case 'E':
+            in << 0, 0, 0, 0, 0, 0, 1, 1;
+            break;
+    }
+    return in;
+}
+
+Eigen::MatrixXd get_input_no_bias(char letter) {
     Eigen::MatrixXd in(7, 1);
     switch (letter) {
         case 'B':

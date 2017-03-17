@@ -47,7 +47,7 @@ std::vector<Eigen::MatrixXd> Cell::compute(
         + this->input_gate_out.cwiseProduct(this->input_block_out));
 
     this->cell_out =
-        this->cell_state.unaryExpr(&tanh).cwiseProduct(this->output_gate_out);
+        this->cell_state.unaryExpr(&tanhyp).cwiseProduct(this->output_gate_out);
 
     std::vector<Eigen::MatrixXd> result;
     result.push_back(cell_out);
@@ -65,8 +65,7 @@ std::vector<Eigen::MatrixXd> Cell::compute_gradient(Eigen::MatrixXd* deltas,
 // Comptutes do
     Eigen::MatrixXd delta_output_gate = delta_cell_out.cwiseProduct(
         cell_state.unaryExpr(&tanh).cwiseProduct(output_gate_out).cwiseProduct(
-        Eigen::MatrixXd::Ones(this->weights->output_size, 1)
-        - output_gate_out));
+        Eigen::MatrixXd::Ones(this->weights->output_size, 1)- output_gate_out));
 
     this->weights->delta_weight_in_output_gate +=
         delta_output_gate * this->input.transpose();
@@ -87,8 +86,7 @@ std::vector<Eigen::MatrixXd> Cell::compute_gradient(Eigen::MatrixXd* deltas,
     Eigen::MatrixXd delta_input_gate = delta_cell_state
         .cwiseProduct(input_block_out).cwiseProduct(input_gate_out)
         .cwiseProduct(
-        (Eigen::MatrixXd::Ones(input_gate_out.rows(), input_gate_out.cols()) -
-        input_gate_out));
+        (Eigen::MatrixXd::Ones(input_gate_out.rows(), 1) - input_gate_out));
 
     this->weights->delta_weight_in_input_gate +=
         delta_input_gate * this->input.transpose();
@@ -99,8 +97,9 @@ std::vector<Eigen::MatrixXd> Cell::compute_gradient(Eigen::MatrixXd* deltas,
 // Computes dz
     Eigen::MatrixXd delta_input_block =
         delta_cell_state.cwiseProduct(input_gate_out)
-        .cwiseProduct((Eigen::MatrixXd::Ones(this->weights->output_size, 1) -
-        input_block_out.array().pow(2).matrix()));  // Worst line ever :)
+        .cwiseProduct(input_block_out.cwiseProduct(
+        Eigen::MatrixXd::Ones(this->weights->output_size, 1)
+        - input_block_out.unaryExpr(&tanh2) ));
 
     this->weights->delta_weight_in_input_block +=
         delta_input_block * this->input.transpose();
@@ -109,11 +108,12 @@ std::vector<Eigen::MatrixXd> Cell::compute_gradient(Eigen::MatrixXd* deltas,
         delta_input_block * this->previous_output.transpose();
 
 // Computes dx
+
     Eigen::MatrixXd delta_input =
-        this->weights->weight_in_input_block * delta_input_block +
-        this->weights->weight_in_input_gate * delta_input_gate +
+        this->weights->weight_st_input_block.transpose() * delta_input_block +
+        this->weights->weight_st_input_gate.transpose() * delta_input_gate +
 //        this->weights->weight_in_forget_gate * delta_forget_gate +
-        this->weights->weight_in_output_gate * delta_output_gate;
+        this->weights->weight_st_output_gate.transpose() * delta_output_gate;
 
 // Computes dy(t)
 //        Eigen::MatrixXd delta_cell_out = deltas +
